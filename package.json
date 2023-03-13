@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:server": "nodemon --watch './server/index.ts' --exec 'ts-node ./server/index.ts",
-    "build:server": "tsc",
+    "build:server": "tsc ./index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
