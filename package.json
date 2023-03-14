@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev:server": "nodemon --watch './server/index.ts' --exec ts-node ./server/index.ts",
+    "dev:server": "nodemon --watch './server/index.ts' --exec 'ts-node ./server/index.ts'",
     "build:server": "tsc"
   },
   "author": "",
