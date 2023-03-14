@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev:server": "nodemon --watch './index.ts' --exec ts-node ./index.ts",
-    "build:server": "tsc --build /.index.ts"
+    "build:server": "tsc"
      },
   "author": "",
   "license": "ISC",

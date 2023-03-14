@@ -1,18 +1,17 @@
-// SERVER
-import {rtdb, firestore} from "./db";
-import {ref, set, push} from "firebase/database";
-import * as express from "express";
-import * as cors from "cors";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// // SERVER
+const db_1 = require("./db");
+const express = require("express");
+const cors = require("cors");
 const app = express();
-// const PORT = 3000;
-
-const PORT = process.env.PORT;
+const PORT = 3000;
+// const PORT = process.env.PORT;
 console.log(PORT);
-
 app.use(express.json());
 app.use(cors());
-const userCollection = firestore.collection("users");
-const roomCollection = firestore.collection("rooms");
+const userCollection = db_1.firestore.collection("users");
+const roomCollection = db_1.firestore.collection("rooms");
 app.get("/rooms", async (req, res) => {
     res.json({ "noob": "vos" });
     console.log("noob");
