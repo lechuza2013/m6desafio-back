@@ -2,7 +2,6 @@
   "name": "desafiofinalmod6-back",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev:server": "nodemon --watch './index.ts' --exec ts-node ./index.ts",
     "build:server": "tsc --build",
