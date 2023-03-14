@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev:server": "nodemon --watch './index.ts' --exec ts-node ./index.ts",
-    "build:server": "tsc --build",
+    "build:server": "tsc --build /.index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
