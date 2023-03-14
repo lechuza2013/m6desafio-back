@@ -1,4 +1,4 @@
-// SERVER
+// // SERVER
 import {rtdb, firestore} from "./db";
 import {ref, set, push} from "firebase/database";
 import * as express from "express";
@@ -8,8 +8,8 @@ import {v4 as uuidv4} from "uuid";
 import * as cors from "cors";
 
 const app = express();
-// const PORT = 3000;
-const PORT = process.env.PORT;
+const PORT = 3000;
+// const PORT = process.env.PORT;
 console.log(PORT);
 
 app.use(express.json());

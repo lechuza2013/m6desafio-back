@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:server": "nodemon --watch './server/index.ts' --exec 'ts-node ./server/index.ts",
+    "dev:server": "nodemon --watch './index.ts' --exec ts-node ./index.ts",
     "build:server": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
