@@ -23,7 +23,7 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig);
-const rtdb = getDatabase(app as any);
+const rtdb = getDatabase(app);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as any),
