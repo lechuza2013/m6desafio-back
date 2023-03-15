@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import admin from "firebase-admin";
 import { initializeApp } from "firebase-admin";
 import { getDatabase } from "firebase/database";
 
