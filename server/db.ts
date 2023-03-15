@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-// import { initializeApp } from "firebase-admin";
+import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
 const serviceAccount = {
@@ -22,7 +22,7 @@ const firebaseConfig = {
     databaseURL: process.env.FIREBASE_DB_URL
 }
 
-const app = admin.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const rtdb = getDatabase(app as any);
 
 admin.initializeApp({
