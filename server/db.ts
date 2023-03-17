@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { getDatabase} from "firebase/database";
 
 const serviceAccount = {
     type: "service_account",
@@ -13,7 +13,7 @@ const serviceAccount = {
     token_uri: process.env.FIREBASE_TOKEN_URI,
     auth_provider_x509_cert_url: process.env.FIREBASE_CERT,
     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT,
-}
+} 
 
 const firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
@@ -27,7 +27,7 @@ const rtdb = getDatabase(app);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as any),
-    databaseURL: process.env.FIREBASE_DB_URL
+    databaseURL: process.env.FIREBASE_DB_URL,
 })
 
 const firestore = admin.firestore();
