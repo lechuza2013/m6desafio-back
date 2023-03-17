@@ -15,23 +15,14 @@ const serviceAccount = {
     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT,
 } 
 
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DB_URL
-}
-
-const app = initializeApp(firebaseConfig);
-const rtdb = getDatabase(app);
-
-admin.initializeApp({
+const app = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as any),
     databaseURL: process.env.FIREBASE_DB_URL,
-})
+});
 
-const firestore = admin.firestore();
+const firestoreDB = admin.firestore();
+const realtimeDB = admin.database();
 
-export { firestore, rtdb };
+export { firestoreDB , realtimeDB };
 
 

@@ -1,5 +1,5 @@
 // // SERVER
-import {rtdb, firestore} from "./db";
+import {realtimeDB, firestoreDB} from "./db";
 import {ref, set, push} from "firebase/database";
 import * as express from "express";
 
@@ -15,8 +15,8 @@ console.log(PORT);
 app.use(express.json());
 app.use(cors());
 
-const userCollection = firestore.collection("users");
-const roomCollection = firestore.collection("rooms");
+// const userCollection = firestore.collection("users");
+// const roomCollection = firestore.collection("rooms");
 
 app.get("/rooms", async (req, res)=>{
    res.json({"noob": "vos"});

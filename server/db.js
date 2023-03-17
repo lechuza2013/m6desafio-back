@@ -1,9 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rtdb = exports.firestore = void 0;
+exports.realtimeDB = exports.firestoreDB = void 0;
 const firebase_admin_1 = require("firebase-admin");
-const firebase_admin_2 = require("firebase-admin");
-const database_1 = require("firebase/database");
 const serviceAccount = {
     type: "service_account",
     project_id: process.env.FIREBASE_PROJECT_ID,
@@ -16,18 +14,11 @@ const serviceAccount = {
     auth_provider_x509_cert_url: process.env.FIREBASE_CERT,
     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT,
 };
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DB_URL
-};
-const app = (0, firebase_admin_2.initializeApp)(firebaseConfig);
-const rtdb = (0, database_1.getDatabase)(app);
-exports.rtdb = rtdb;
-firebase_admin_1.default.initializeApp({
+const app = firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DB_URL
+    databaseURL: process.env.FIREBASE_DB_URL,
 });
-const firestore = firebase_admin_1.default.firestore();
-exports.firestore = firestore;
+const firestoreDB = firebase_admin_1.default.firestore();
+exports.firestoreDB = firestoreDB;
+const realtimeDB = firebase_admin_1.default.database();
+exports.realtimeDB = realtimeDB;
