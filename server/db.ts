@@ -15,7 +15,7 @@ const serviceAccount = {
     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT,
 } 
 
-const app = admin.initializeApp({
+admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as any),
     databaseURL: process.env.FIREBASE_DB_URL,
 });
