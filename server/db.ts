@@ -1,6 +1,4 @@
 import admin from "firebase-admin";
-import { initializeApp } from "firebase/app";
-import { getDatabase} from "firebase/database";
 
 const serviceAccount = {
     type: "service_account",

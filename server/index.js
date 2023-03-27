@@ -1,25 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// // SERVER
+const db_1 = require("./db");
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
-const PORT = 3000;
-// const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 console.log(PORT);
 app.use(express.json());
 app.use(cors());
-// const userCollection = firestore.collection("users");
-// const roomCollection = firestore.collection("rooms");
-app.get("/rooms", async (req, res) => {
-    res.json({ "noob": "vos" });
-    console.log("noob");
-    // roomCollection.get().then((roomSnap)=>{
-    //    const roomCollectionSnap = roomSnap;
-    //    console.log("RoomSnap: ", roomCollectionSnap);
-    //    res.json(roomCollectionSnap);
-    // });
-    // PROBAR SI LA API EN EL DEPLOY 
-    // PROBAR CON POSTMAN
+app.use(bodyParser.json());
+const usersDataRef = db_1.firestoreDB.collection("users");
+const roomsDataRef = db_1.firestoreDB.collection("rooms");
+// Devuelve un array con los datos de los usuarios ya existentes
+app.get("/users", (req, res) => {
+    usersDataRef.get().then((usersData) => {
+        const docs = usersData.docs;
+        const users = docs.map((doc) => {
+            res.json(doc.data());
+        });
+        res.status(200).send({
+            ...users,
+        });
+    });
 });
 app.get("/env", async (req, res) => {
     res.json({
