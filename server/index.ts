@@ -23,7 +23,7 @@ app.get("/users", (req, res) => {
 	usersDataRef.get().then((usersData) => {
 		const docs = usersData.docs;
 		const users = docs.map((doc) => {
-			return doc.data();
+			res.json(doc.data());
 		});
 		res.status(200).send({
 			...users,
