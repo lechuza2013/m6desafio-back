@@ -1,9 +1,9 @@
 // // SERVER
 import {realtimeDB, firestoreDB} from "./db";
-import {ref, set, push} from "firebase/database";
 import * as express from "express";
+import * as bodyParser from "body-parser";
 
-// CORS, UUID.
+// CORS, UUID, BODY-PARSER.
 import {v4 as uuidv4} from "uuid";
 import * as cors from "cors";
 
@@ -13,6 +13,7 @@ console.log(PORT);
 
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
 
 const usersDataRef = firestoreDB.collection("users");
 const roomsDataRef = firestoreDB.collection("rooms");
