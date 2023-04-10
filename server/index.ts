@@ -41,6 +41,7 @@ app.get("/users", (req, res) => {
 // Autentica el usuario para iniciar sesión, devolviendo su userId
 app.post("/auth", (req, res) => {
   const { email, password } = req.body;
+  console.log("Email y password recibidos: ", email, password);
   usersCollectionRef
     .where("email", "==", email)
     .where("password", "==", password)
