@@ -19,6 +19,13 @@ app.use(bodyParser.json());
 const usersCollectionRef = firestoreDB.collection("users");
 const roomsCollectionRef = firestoreDB.collection("rooms");
 
+const rtdbTestRef = realtimeDB.ref(
+  "rooms/164c83ff-d948-4f08-930a-98a482dcca92"
+);
+const dbtestRef = usersCollectionRef.doc("1arFfQiPvNIxkguRXbGP");
+dbtestRef.onSnapshot((doc) => {
+  console.log("Current changed data: ", doc.data());
+});
 // ------------ GET ------------
 
 // Devuelve toda la data de los usuarios ya existentes
@@ -41,7 +48,7 @@ app.get("/auth", (req, res) => {
     .then((data) => {
       if (data.empty) {
         res.status(404).send({
-          message: "El correo o la contraseña son incorrectos,",
+          message: "El correo o la contraseña son incorrectos",
         });
       } else if (data.docs) {
         res.status(200).send({
