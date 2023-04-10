@@ -39,7 +39,7 @@ app.get("/users", (req, res) => {
   });
 });
 // Autentica el usuario para iniciar sesión, devolviendo su userId
-app.get("/auth", (req, res) => {
+app.post("/auth", (req, res) => {
   const { email, password } = req.body;
   usersCollectionRef
     .where("email", "==", email)
@@ -62,7 +62,7 @@ app.get("/auth", (req, res) => {
 });
 
 // Devuelve el rtdbRommID recibiendo el ID 'Amigable' [FSDB]
-app.get("/getRoomId/:roomId", (req, res) => {
+app.post("/getRoomId/:roomId", (req, res) => {
   const { roomId } = req.params; // ID Recibido
   const roomRef = roomsCollectionRef.doc(roomId); // Consulta en la firestore collection
 
@@ -78,7 +78,7 @@ app.get("/getRoomId/:roomId", (req, res) => {
   });
 });
 // Devuelve la data de la Room con su ID 'Seguro' [RTDB]
-app.get("/getRoomData/:roomId", (req, res) => {
+app.post("/getRoomData/:roomId", (req, res) => {
   const { roomId } = req.params; // ID Recibido
   const roomRef = realtimeDB.ref("rooms/" + roomId); // Consulta la room en la RTDB
   roomRef.get().then((snap) => {
@@ -93,7 +93,7 @@ app.get("/getRoomData/:roomId", (req, res) => {
   });
 });
 
-app.get("/getRoomsid/", async (req, res) => {
+app.post("/getRoomsid/", async (req, res) => {
   var roomsData = [];
 
   const { userId } = req.body;
