@@ -8,8 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-console.log(PORT);
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());
@@ -17,13 +16,6 @@ app.use(bodyParser.json());
 
 const usersCollectionRef = firestoreDB.collection("users");
 const roomsCollectionRef = firestoreDB.collection("rooms");
-
-// realtimeDB
-//   .ref("/rooms/164c83ff-d948-4f08-930a-98a482dcca92")
-//   .on("value", (snap) => {
-//     const data = snap.val();
-//     console.log("Changed value: ", data);
-//   });
 
 // ------------ GET ------------
 
