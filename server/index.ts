@@ -2,8 +2,6 @@
 import { realtimeDB, firestoreDB } from "./db";
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { doc, setDoc } from "firebase/firestore";
-import * as functions from "firebase-functions";
 
 // CORS, UUID, BODY-PARSER.
 import { v4 as uuidv4 } from "uuid";
