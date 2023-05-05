@@ -3,6 +3,7 @@ import { realtimeDB, firestoreDB } from "./db";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { doc, setDoc } from "firebase/firestore";
+import * as functions from "firebase-functions";
 
 // CORS, UUID, BODY-PARSER.
 import { v4 as uuidv4 } from "uuid";
@@ -19,13 +20,13 @@ app.use(bodyParser.json());
 const usersCollectionRef = firestoreDB.collection("users");
 const roomsCollectionRef = firestoreDB.collection("rooms");
 
-const rtdbTestRef = realtimeDB.ref(
-  "rooms/164c83ff-d948-4f08-930a-98a482dcca92"
-);
-const dbtestRef = usersCollectionRef.doc("1arFfQiPvNIxkguRXbGP");
-dbtestRef.onSnapshot((doc) => {
-  console.log("Current changed data: ", doc.data());
-});
+// realtimeDB
+//   .ref("/rooms/164c83ff-d948-4f08-930a-98a482dcca92")
+//   .on("value", (snap) => {
+//     const data = snap.val();
+//     console.log("Changed value: ", data);
+//   });
+
 // ------------ GET ------------
 
 // Devuelve toda la data de los usuarios ya existentes
@@ -63,7 +64,7 @@ app.post("/auth", (req, res) => {
 });
 
 // Devuelve el rtdbRommID recibiendo el ID 'Amigable' [FSDB]
-app.post("/getRoomId/:roomId", (req, res) => {
+app.get("/getRoomId/:roomId", (req, res) => {
   const { roomId } = req.params; // ID Recibido
   const roomRef = roomsCollectionRef.doc(roomId); // Consulta en la firestore collection
 
@@ -93,7 +94,7 @@ app.post("/getRoomData/:roomId", (req, res) => {
     }
   });
 });
-
+// Devuelve todos los rooms creados por el usuario
 app.post("/getRoomsid/", async (req, res) => {
   var roomsData = [];
 
@@ -150,7 +151,8 @@ app.post("/signup", (req, res) => {
           });
       } else {
         res.status(400).json({
-          message: "email already exists",
+          message:
+            "El email ingresado ya fue usado, por favor ingrese otro (Me salió una rima)",
         });
       }
     });
@@ -160,7 +162,7 @@ app.post("/signup", (req, res) => {
 // CREAR ROOM [Recibe UserId y devuelve RoomId - Agrega el roomId amigable a lo dato del usuario]
 app.post("/createRoom", (req, res) => {
   //El userId que recibe de la request
-  const { userId } = req.body;
+  const { userId, userName } = req.body;
   const roomRef = realtimeDB.ref("rooms/" + uuidv4());
   console.log(userId);
   usersCollectionRef
@@ -173,16 +175,16 @@ app.post("/createRoom", (req, res) => {
             currentGame: {
               [userId]: {
                 choice: "",
-                name: "",
-                online: "",
-                start: "",
+                name: userName,
+                online: true,
+                start: false,
                 score: 0,
               },
               secondPlayer: {
                 choice: "",
                 name: "",
-                online: "",
-                start: "",
+                online: false,
+                start: false,
                 score: 0,
               },
             },
@@ -212,7 +214,8 @@ app.post("/createRoom", (req, res) => {
               })
               .then(() => {
                 res.json({
-                  id: roomId.toString(), // ID Amigable para joinear a la Room
+                  shortId: roomId.toString(), // ID Amigable para joinear a la Room
+                  longRoomId: roomLongId,
                   message: "RoomID Agregado al user!",
                 });
               });
@@ -224,6 +227,32 @@ app.post("/createRoom", (req, res) => {
         });
       }
     });
+});
+
+app.post("/addPoint", (req, res) => {
+  const { roomId, userId } = req.body;
+  const roomRef = realtimeDB.ref("/rooms/" + roomId);
+
+  roomRef.get().then((roomSnap) => {
+    var roomSnapData = roomSnap.val();
+
+    roomSnapData.currentGame[userId].score++;
+    roomRef.update(roomSnapData);
+  });
+  res.json("Victoria!");
+});
+
+app.post("/sendChoice", (req, res) => {
+  const { roomId, userId, choice } = req.body;
+  const roomRef = realtimeDB.ref("/rooms/" + roomId);
+
+  roomRef.get().then((roomSnap) => {
+    var roomSnapData = roomSnap.val();
+
+    roomSnapData.currentGame[userId].choice = choice;
+    roomRef.update(roomSnapData);
+  });
+  res.json("Jugada hecha");
 });
 
 // ------------ PATCH ------------
@@ -263,24 +292,63 @@ app.patch("/joinRoom/:roomId/:userId", (req, res) => {
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
   roomRef.get().then((currentGameSnap) => {
     var currentGameSnapData = currentGameSnap.val();
-
+    var message: string;
     //Se actualiza el userId del segundo jugador, y los valores de "online", "name".
-    Object.assign(currentGameSnapData.currentGame, {
-      [userId]: {
-        choice: "",
-        name: userName,
-        online: userStatus,
-        start: "",
-        score: 0,
-      },
-    });
-    delete currentGameSnapData.currentGame.secondPlayer;
-    //Se guardan en una variable para mandar la data a la RTDB ya actualizada.
-    var currentGameUpdated = currentGameSnapData;
-    console.log("Variable check: ", currentGameUpdated);
+    if (currentGameSnapData.currentGame.secondPlayer) {
+      Object.assign(currentGameSnapData.currentGame, {
+        [userId]: {
+          choice: "",
+          name: userName,
+          online: userStatus,
+          start: false,
+          score: 0,
+        },
+      });
+      delete currentGameSnapData.currentGame.secondPlayer;
+      message = "Te has unido a la sala!";
+    } else if (currentGameSnapData.currentGame[userId]) {
+      currentGameSnapData.currentGame[userId].online = userStatus;
+      currentGameSnapData.currentGame[userId].choice = "";
+      (currentGameSnapData.currentGame[userId].start = false),
+        (message = "Te has conectado a la sala!");
+    } else {
+      message = "Sala llena, o tu nombre no coincide con los participantes";
+    }
+    if (
+      message === "Te has unido a la sala!" ||
+      "Te has conectado a la sala!"
+    ) {
+      //Se guardan en una variable para mandar la data a la RTDB ya actualizada.
+      var currentGameUpdated = currentGameSnapData;
+      roomRef.update(currentGameUpdated);
+    }
+    res.json({ message });
+  });
+});
 
-    roomRef.update(currentGameUpdated);
-    res.json({ message: "Segundo jugador online!" });
+// ¡Jugar! - Espera
+app.patch("/gameRoom/:roomId/start/:userId", (req, res) => {
+  //El RoomId de la RTDB, y el userId para establecer sus datos.
+  const { roomId, userId } = req.params;
+  const roomRef = realtimeDB.ref("/rooms/" + roomId);
+  roomRef.get().then((currentGameSnap) => {
+    var cgsData = currentGameSnap.val();
+    cgsData.currentGame[userId].online = true;
+    cgsData.currentGame[userId].start = true;
+
+    roomRef.update(cgsData);
+  });
+});
+// Terminó la ronda, se acomodan los datos.
+app.patch("/gameRoom/:roomId/restart/:userId", (req, res) => {
+  const { roomId, userId } = req.params;
+  const roomRef = realtimeDB.ref("/rooms/" + roomId);
+  roomRef.get().then((currentGameSnap) => {
+    var cgData = currentGameSnap.val();
+    cgData.currentGame[userId].online = true;
+    cgData.currentGame[userId].start = false;
+    cgData.currentGame[userId].choice = "";
+    roomRef.update(cgData);
   });
 });
 
