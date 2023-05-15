@@ -17,6 +17,19 @@ app.use(bodyParser.json());
 const usersCollectionRef = firestoreDB.collection("users");
 const roomsCollectionRef = firestoreDB.collection("rooms");
 
+// Add Access Control Allow Origin headers
+app.use((req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://piedrapapelotijerazo.onrender.com"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 // ------------ GET ------------
 
 // Devuelve toda la data de los usuarios ya existentes
