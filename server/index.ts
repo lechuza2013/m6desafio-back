@@ -97,38 +97,51 @@ app.post("/getRoomData/:roomId", (req, res) => {
     }
   });
 });
+
 // Devuelve todos los rooms creados por el usuario
-app.post("/getRoomsid/", async (req, res) => {
+app.get("/getRoomsid/:userId", async (req, res) => {
   var roomsData = [];
 
-  const { userId } = req.body;
+  // COMPLETAR ESTO............!!!!!!!!!!
+  const { userId } = req.params;
   const userRef = usersCollectionRef.doc(userId);
   await userRef.get().then((userData) => {
+    // 1 solo llamado
     const roomsArray = userData.get("rooms");
     console.log("roomsArray: ", roomsArray);
-
-    roomsArray.forEach((id) => {
-      const roomRef = roomsCollectionRef.doc(id.toString());
-
-      roomRef.get().then((rtdbRoomid) => {
-        const realID = rtdbRoomid.data();
-        console.log("id: ", realID.rtdbRoomid);
-        const roomRTDBRef = realtimeDB.ref("/rooms/" + realID.rtdbRoomid);
-
-        roomRTDBRef.get().then((snap) => {
-          const snapData = snap.val();
-          console.log("snapData", snapData);
-          roomsData.push(snapData);
-          if (roomsData.length == roomsArray.length) {
-            res.json(roomsData);
-          }
-          console.log("RoomsData", roomsData);
+    roomsCollectionRef.get().then((data) => {
+      if (data.empty) {
+        res.json({ message: "¡No has creado ninguna sala!" });
+      } else {
+        const doc = data.docs;
+        const rooms = doc.map((item) => {
+          return item.data();
         });
-      });
+        res.json({ rooms });
+      }
     });
+
+    // roomsArray.forEach((id) => {
+    //   const roomRef = roomsCollectionRef.doc(id.toString());
+
+    //   roomRef.get().then((rtdbRoomid) => {
+    //     const realID = rtdbRoomid.data();
+    //     console.log("id: ", realID.rtdbRoomid);
+    //     const roomRTDBRef = realtimeDB.ref("/rooms/" + realID.rtdbRoomid);
+
+    //     roomRTDBRef.get().then((snap) => {
+    //       const snapData = snap.val();
+    //       console.log("snapData", snapData);
+    //       roomsData.push(snapData);
+    //       if (roomsData.length == roomsArray.length) {
+    //         res.json(roomsData);
+    //       }
+    //       console.log("RoomsData", roomsData);
+    //     });
+    //   });
+    // });
   });
 });
-
 // ------------ POST ------------
 
 // CREAR USUARIO [Recibe Email, Name y Password, devuelve userId]
