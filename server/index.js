@@ -14,6 +14,12 @@ app.use(cors());
 app.use(bodyParser.json());
 const usersCollectionRef = db_1.firestoreDB.collection("users");
 const roomsCollectionRef = db_1.firestoreDB.collection("rooms");
+// Add Access Control Allow Origin headers
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "https://piedrapapelotijerazo.onrender.com");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 // ------------ GET ------------
 // Devuelve toda la data de los usuarios ya existentes
 app.get("/users", (req, res) => {
@@ -66,7 +72,7 @@ app.get("/getRoomId/:roomId", (req, res) => {
     });
 });
 // Devuelve la data de la Room con su ID 'Seguro' [RTDB]
-app.post("/getRoomData/:roomId", (req, res) => {
+app.get("/getRoomData/:roomId", (req, res) => {
     const { roomId } = req.params; // ID Recibido
     const roomRef = db_1.realtimeDB.ref("rooms/" + roomId); // Consulta la room en la RTDB
     roomRef.get().then((snap) => {
@@ -82,30 +88,48 @@ app.post("/getRoomData/:roomId", (req, res) => {
     });
 });
 // Devuelve todos los rooms creados por el usuario
-app.post("/getRoomsid/", async (req, res) => {
+app.get("/getRoomsid/:userId", async (req, res) => {
     var roomsData = [];
-    const { userId } = req.body;
+    // COMPLETAR ESTO............!!!!!!!!!!
+    const { userId } = req.params;
     const userRef = usersCollectionRef.doc(userId);
     await userRef.get().then((userData) => {
+        // 1 solo llamado
         const roomsArray = userData.get("rooms");
         console.log("roomsArray: ", roomsArray);
-        roomsArray.forEach((id) => {
-            const roomRef = roomsCollectionRef.doc(id.toString());
-            roomRef.get().then((rtdbRoomid) => {
-                const realID = rtdbRoomid.data();
-                console.log("id: ", realID.rtdbRoomid);
-                const roomRTDBRef = db_1.realtimeDB.ref("/rooms/" + realID.rtdbRoomid);
-                roomRTDBRef.get().then((snap) => {
-                    const snapData = snap.val();
-                    console.log("snapData", snapData);
-                    roomsData.push(snapData);
-                    if (roomsData.length == roomsArray.length) {
-                        res.json(roomsData);
-                    }
-                    console.log("RoomsData", roomsData);
-                });
+        //Devuelve todas las rtdbRoomsId
+        roomsCollectionRef
+            .get()
+            .then((data) => {
+            const doc = data.docs;
+            doc.forEach((item) => {
+                // Si en el array de las shortRoomId coincide con algunos de los id de los items...
+                if (roomsArray.find(item.id)) {
+                    //Pushea la informacion del item (la longRoomId)
+                    roomsData.push(item.data());
+                }
             });
+        })
+            .then(() => {
+            res.json({ roomsData });
         });
+        // roomsArray.forEach((id) => {
+        //   const roomRef = roomsCollectionRef.doc(id.toString());
+        //   roomRef.get().then((rtdbRoomid) => {
+        //     const realID = rtdbRoomid.data();
+        //     console.log("id: ", realID.rtdbRoomid);
+        //     const roomRTDBRef = realtimeDB.ref("/rooms/" + realID.rtdbRoomid);
+        //     roomRTDBRef.get().then((snap) => {
+        //       const snapData = snap.val();
+        //       console.log("snapData", snapData);
+        //       roomsData.push(snapData);
+        //       if (roomsData.length == roomsArray.length) {
+        //         res.json(roomsData);
+        //       }
+        //       console.log("RoomsData", roomsData);
+        //     });
+        //   });
+        // });
     });
 });
 // ------------ POST ------------

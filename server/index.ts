@@ -98,11 +98,10 @@ app.get("/getRoomData/:roomId", (req, res) => {
   });
 });
 
-// Devuelve todos los rooms creados por el usuario
+// Devuelve todos los rooms creados por el usuario recibiendo el userID
 app.get("/getRoomsid/:userId", async (req, res) => {
   var roomsData = [];
-
-  // COMPLETAR ESTO............!!!!!!!!!!
+  var actualizedRoomsData = [];
 
   const { userId } = req.params;
   const userRef = usersCollectionRef.doc(userId);
@@ -111,42 +110,61 @@ app.get("/getRoomsid/:userId", async (req, res) => {
     const roomsArray = userData.get("rooms");
     console.log("roomsArray: ", roomsArray);
 
-    //Devuelve todas las rtdbRoomsId
-    roomsCollectionRef
-      .get()
-      .then((data) => {
-        const doc = data.docs;
-        doc.forEach((item) => {
-          // Si en el array de las shortRoomId coincide con algunos de los id de los items...
-          if (roomsArray.find(item.id)) {
-            //Pushea la informacion del item (la longRoomId)
-            roomsData.push(item.data());
-          }
+    if (roomsArray.empty) {
+      res.json({ message: "No creaste ninguna gameRoom" });
+    } else {
+      //Devuelve todas las rtdbRoomsId
+      roomsCollectionRef
+        .get()
+        .then((data) => {
+          const doc = data.docs;
+          //Devuelve las LongRoomId
+          doc.map((item) => {
+            roomsArray.forEach((i) => {
+              if (i == item.id) {
+                roomsData.push({
+                  shortRoomID: i,
+                  longRoomID: item.data().rtdbRoomid,
+                  playerOneName: "",
+                  playerOneScore: 0,
+                  playerTwoName: "",
+                  playerTwoScore: 0,
+                });
+              }
+            });
+          });
+        })
+        .then(() => {
+          const roomRefRTDB = realtimeDB.ref("/rooms/");
+          roomRefRTDB.get().then((rooms) => {
+            var roomsSnapData = rooms.val();
+            roomsData.forEach((item) => {
+              if (roomsSnapData[item.longRoomID]) {
+                item.playerOneName =
+                  roomsSnapData[item.longRoomID].currentGame[
+                    Object.keys(roomsSnapData[item.longRoomID].currentGame)[0]
+                  ].name;
+                item.playerOneScore =
+                  roomsSnapData[item.longRoomID].currentGame[
+                    Object.keys(roomsSnapData[item.longRoomID].currentGame)[0]
+                  ].score;
+                // Segundo player
+                item.playerTwoName =
+                  roomsSnapData[item.longRoomID].currentGame[
+                    Object.keys(roomsSnapData[item.longRoomID].currentGame)[1]
+                  ].name;
+                item.playerTwoScore =
+                  roomsSnapData[item.longRoomID].currentGame[
+                    Object.keys(roomsSnapData[item.longRoomID].currentGame)[1]
+                  ].score;
+                actualizedRoomsData.push(item);
+                console.log("ActualizedData: ", actualizedRoomsData);
+              }
+            });
+            res.json({ gamerroms: actualizedRoomsData });
+          });
         });
-      })
-      .then(() => {
-        res.json({ roomsData });
-      });
-
-    // roomsArray.forEach((id) => {
-    //   const roomRef = roomsCollectionRef.doc(id.toString());
-
-    //   roomRef.get().then((rtdbRoomid) => {
-    //     const realID = rtdbRoomid.data();
-    //     console.log("id: ", realID.rtdbRoomid);
-    //     const roomRTDBRef = realtimeDB.ref("/rooms/" + realID.rtdbRoomid);
-
-    //     roomRTDBRef.get().then((snap) => {
-    //       const snapData = snap.val();
-    //       console.log("snapData", snapData);
-    //       roomsData.push(snapData);
-    //       if (roomsData.length == roomsArray.length) {
-    //         res.json(roomsData);
-    //       }
-    //       console.log("RoomsData", roomsData);
-    //     });
-    //   });
-    // });
+    }
   });
 });
 // ------------ POST ------------
