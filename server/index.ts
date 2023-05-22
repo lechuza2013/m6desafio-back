@@ -107,27 +107,26 @@ app.get("/getRoomsid/:userId", async (req, res) => {
   const { userId } = req.params;
   const userRef = usersCollectionRef.doc(userId);
   await userRef.get().then((userData) => {
+    // 1 solo llamado
+    const roomsArray = userData.get("rooms");
+    console.log("roomsArray: ", roomsArray);
+
     //Devuelve todas las rtdbRoomsId
-    roomsCollectionRef.get().then((data) => {
-      const doc = data.docs;
-      const rooms = doc.map((item) => {
-        return item.data();
-      });
-      // 1 solo llamado
-      const roomsArray = userData.get("rooms");
-      console.log("roomsArray: ", roomsArray);
-      roomsCollectionRef
-        .where(roomsArray, "in", roomsArray)
-        .get()
-        .then((snap) => {
-          snap.forEach((doc) => {
-            roomsData.push({ [doc.id]: [doc.data()] });
-          });
-        })
-        .then(() => {
-          res.json({ roomsData: roomsData });
+    roomsCollectionRef
+      .get()
+      .then((data) => {
+        const doc = data.docs;
+        doc.map((item) => {
+          // Si en el array de las shortRoomId coincide con algunos de los id de los items...
+          if (roomsArray.find(item.id)) {
+            //Pushea la informacion del item (la longRoomId)
+            roomsData.push(item.data());
+          }
         });
-    });
+      })
+      .then(() => {
+        res.json({ roomsData });
+      });
 
     // roomsArray.forEach((id) => {
     //   const roomRef = roomsCollectionRef.doc(id.toString());
