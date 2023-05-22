@@ -116,7 +116,7 @@ app.get("/getRoomsid/:userId", async (req, res) => {
       .get()
       .then((data) => {
         const doc = data.docs;
-        doc.map((item) => {
+        doc.forEach((item) => {
           // Si en el array de las shortRoomId coincide con algunos de los id de los items...
           if (roomsArray.find(item.id)) {
             //Pushea la informacion del item (la longRoomId)
