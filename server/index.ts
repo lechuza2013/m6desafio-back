@@ -83,7 +83,7 @@ app.get("/getRoomId/:roomId", (req, res) => {
   });
 });
 // Devuelve la data de la Room con su ID 'Seguro' [RTDB]
-app.post("/getRoomData/:roomId", (req, res) => {
+app.get("/getRoomData/:roomId", (req, res) => {
   const { roomId } = req.params; // ID Recibido
   const roomRef = realtimeDB.ref("rooms/" + roomId); // Consulta la room en la RTDB
   roomRef.get().then((snap) => {
@@ -103,22 +103,30 @@ app.get("/getRoomsid/:userId", async (req, res) => {
   var roomsData = [];
 
   // COMPLETAR ESTO............!!!!!!!!!!
+
   const { userId } = req.params;
   const userRef = usersCollectionRef.doc(userId);
   await userRef.get().then((userData) => {
-    // 1 solo llamado
-    const roomsArray = userData.get("rooms");
-    console.log("roomsArray: ", roomsArray);
+    //Devuelve todas las rtdbRoomsId
     roomsCollectionRef.get().then((data) => {
-      if (data.empty) {
-        res.json({ message: "¡No has creado ninguna sala!" });
-      } else {
-        const doc = data.docs;
-        const rooms = doc.map((item) => {
-          return item.data();
+      const doc = data.docs;
+      const rooms = doc.map((item) => {
+        return item.data();
+      });
+      // 1 solo llamado
+      const roomsArray = userData.get("rooms");
+      console.log("roomsArray: ", roomsArray);
+      roomsCollectionRef
+        .where(roomsArray)
+        .get()
+        .then((snap) => {
+          snap.forEach((doc) => {
+            roomsData.push({ [doc.id]: [doc.data()] });
+          });
+        })
+        .then(() => {
+          res.json({ roomsData: roomsData });
         });
-        res.json({ rooms });
-      }
     });
 
     // roomsArray.forEach((id) => {
