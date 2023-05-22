@@ -117,7 +117,7 @@ app.get("/getRoomsid/:userId", async (req, res) => {
       const roomsArray = userData.get("rooms");
       console.log("roomsArray: ", roomsArray);
       roomsCollectionRef
-        .where(roomsArray)
+        .where(roomsArray, "==", roomsArray)
         .get()
         .then((snap) => {
           snap.forEach((doc) => {
