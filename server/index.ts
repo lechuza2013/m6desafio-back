@@ -110,7 +110,7 @@ app.get("/getRoomsid/:userId", async (req, res) => {
     const roomsArray = userData.get("rooms");
     console.log("roomsArray: ", roomsArray);
 
-    if (roomsArray.empty) {
+    if (roomsArray == roomsData) {
       res.json({ message: "No creaste ninguna gameRoom" });
     } else {
       //Devuelve todas las rtdbRoomsId
