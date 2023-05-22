@@ -161,7 +161,7 @@ app.get("/getRoomsid/:userId", async (req, res) => {
                 console.log("ActualizedData: ", actualizedRoomsData);
               }
             });
-            res.json({ gamerroms: actualizedRoomsData });
+            res.json({ gamerooms: actualizedRoomsData });
           });
         });
     }
