@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.realtimeDB = exports.firestoreDB = void 0;
 const firebase_admin_1 = require("firebase-admin");
-const serviceAccount = require("../key.json");
-// const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+// import * as serviceAccount from "../key.json";
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
-    databaseURL: "https://probandoapx-default-rtdb.firebaseio.com",
+    databaseURL: process.env.FIREBASE_DB_URL,
 });
-// process.env.FIREBASE_DB_URL
+//
 const firestoreDB = firebase_admin_1.default.firestore();
 exports.firestoreDB = firestoreDB;
 const realtimeDB = firebase_admin_1.default.database();

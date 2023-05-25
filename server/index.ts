@@ -21,7 +21,8 @@ const roomsCollectionRef = firestoreDB.collection("rooms");
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://piedrapapelotijerazo.onrender.com"
+    "http://localhost:1234"
+    //https://piedrapapelotijerazo.onrender.com
   );
   res.header(
     "Access-Control-Allow-Headers",
@@ -161,7 +162,7 @@ app.get("/getRoomsid/:userId", async (req, res) => {
                 console.log("ActualizedData: ", actualizedRoomsData);
               }
             });
-            res.json({ gamerooms: actualizedRoomsData });
+            res.json(actualizedRoomsData);
           });
         });
     }
