@@ -33,16 +33,6 @@ app.use((req, res, next) => {
 
 // ------------ GET ------------
 
-// Devuelve toda la data de los usuarios ya existentes
-app.get("/users", (req, res) => {
-  usersCollectionRef.get().then((data) => {
-    const doc = data.docs;
-    const users = doc.map((item) => {
-      return item.data();
-    });
-    res.json({ users });
-  });
-});
 // Autentica el usuario para iniciar sesión, devolviendo su userId
 app.post("/auth", (req, res) => {
   const { email, password } = req.body;
