@@ -372,7 +372,7 @@ app.patch("/gameRoom/:roomId/start/:userId", (req, res) => {
   });
 });
 // Terminó la ronda, se acomodan los datos.
-app.patch("/gameRoom/:roomId/restart/:userId", (req, res) => {
+app.patch("/gameRoom/:roomId/restart", (req, res) => {
   const { roomId } = req.params;
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
   roomRef.get().then((currentGameSnap) => {
