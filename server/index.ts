@@ -372,25 +372,15 @@ app.patch("/gameRoom/:roomId/start/:userId", (req, res) => {
   });
 });
 // Terminó la ronda, se acomodan los datos.
-app.patch("/gameRoom/:roomId/restart", (req, res) => {
-  const { roomId } = req.params;
+app.patch("/gameRoom/:roomId/restart/:userId", (req, res) => {
+  const { roomId, userId } = req.params;
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
   roomRef.get().then((currentGameSnap) => {
     var cgData = currentGameSnap.val();
-    // Player 1
-    cgData.currentGame[cgData.currentGame[Object.keys(cgData)[0]]].online =
-      true;
-    cgData.currentGame[cgData.currentGame[Object.keys(cgData)[0]]].start =
-      false;
-    cgData.currentGame[cgData.currentGame[Object.keys(cgData)[0]]].choice = "";
-    // Player 2
-    cgData.currentGame[cgData.currentGame[Object.keys(cgData)[1]]].online =
-      true;
-    cgData.currentGame[cgData.currentGame[Object.keys(cgData)[1]]].start =
-      false;
-    cgData.currentGame[cgData.currentGame[Object.keys(cgData)[1]]].choice = "";
-
-    // Ambos players por si uno no le dió a continuar.
+    cgData.currentGame[userId].online = true;
+    cgData.currentGame[userId].start = false;
+    cgData.currentGame[userId].choice = "";
+    // cgData.currentGame[Object.keys(cgData)[0]]
 
     roomRef.update(cgData);
   });
