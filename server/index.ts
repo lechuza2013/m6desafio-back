@@ -377,6 +377,7 @@ app.patch("/gameRoom/:roomId/restart/", (req, res) => {
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
   roomRef.get().then((currentGameSnap) => {
     var cgData = currentGameSnap.val();
+    console.log("cgData: ", cgData);
     // Player 1
     cgData.currentGame[Object.keys(cgData.currentGame)[0]].online = true;
     cgData.currentGame[Object.keys(cgData.currentGame)[0]].start = false;
