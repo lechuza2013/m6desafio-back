@@ -378,13 +378,13 @@ app.patch("/gameRoom/:roomId/restart/", (req, res) => {
   roomRef.get().then((currentGameSnap) => {
     var cgData = currentGameSnap.val();
     // Player 1
-    cgData.currentGame[Object.keys(cgData)[0]].online = true;
-    cgData.currentGame[Object.keys(cgData)[0]].start = false;
-    cgData.currentGame[Object.keys(cgData)[0]].choice = "";
+    cgData.currentGame[Object.keys(cgData.currentGame)[0]].online = true;
+    cgData.currentGame[Object.keys(cgData.currentGame)[0]].start = false;
+    cgData.currentGame[Object.keys(cgData.currentGame)[0]].choice = "";
     // Player 2
-    cgData.currentGame[Object.keys(cgData)[1]].online = true;
-    cgData.currentGame[Object.keys(cgData)[1]].start = false;
-    cgData.currentGame[Object.keys(cgData)[1]].choice = "";
+    cgData.currentGame[Object.keys(cgData.currentGamea)[1]].online = true;
+    cgData.currentGame[Object.keys(cgData.currentGame)[1]].start = false;
+    cgData.currentGame[Object.keys(cgData.currentGame)[1]].choice = "";
     // cgData.currentGame[Object.keys(cgData)[0]]
 
     roomRef.update(cgData);
