@@ -21,8 +21,8 @@ const roomsCollectionRef = firestoreDB.collection("rooms");
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://piedrapapelotijerazo.onrender.com"
-    // "http://localhost:1234"
+    // "https://piedrapapelotijerazo.onrender.com"
+    "http://localhost:1234"
   );
   res.header(
     "Access-Control-Allow-Headers",
@@ -273,7 +273,7 @@ app.post("/addPoint", (req, res) => {
   });
   res.json("Victoria!");
 });
-
+// UPDATE: SendChoice también acomoda el start en false.
 app.post("/sendChoice", (req, res) => {
   const { roomId, userId, choice } = req.body;
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
@@ -282,6 +282,7 @@ app.post("/sendChoice", (req, res) => {
     var roomSnapData = roomSnap.val();
 
     roomSnapData.currentGame[userId].choice = choice;
+    roomSnapData.currentGame[userId].start = false;
     roomRef.update(roomSnapData);
   });
   res.json("Jugada hecha");
@@ -299,7 +300,10 @@ app.patch("/gameRoom/:roomId/:userId", (req, res) => {
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
   roomRef.get().then((currentGameSnap) => {
     var currentGameSnapData = currentGameSnap.val();
-
+    console.log(
+      "Im the first patch, this is the currentGameSnap: ",
+      currentGameSnapData
+    );
     //Se actualizan los valores de "online" y "name"
     currentGameSnapData.currentGame[userId].online = userStatus;
     currentGameSnapData.currentGame[userId].name = userName;
@@ -369,29 +373,36 @@ app.patch("/gameRoom/:roomId/start/:userId", (req, res) => {
     cgsData.currentGame[userId].start = true;
 
     roomRef.update(cgsData);
+    res.json({ message: "start seteado" });
   });
 });
 // Terminó la ronda, se acomodan los datos.
-app.patch("/gameRoom/:roomId/restart/", (req, res) => {
-  const { roomId } = req.params;
+app.patch("/restart/:roomId/:userId", (req, res) => {
+  const { roomId, userId } = req.params;
+  const roomRef = realtimeDB.ref("/rooms/" + roomId);
+
+  roomRef.get().then((currentGameSnap) => {
+    var cgData = currentGameSnap.val();
+
+    cgData.currentGame[userId].online = true;
+    cgData.currentGame[userId].start = false;
+    cgData.currentGame[userId].choice = "";
+
+    console.log("cgData actualizada: ", cgData);
+    roomRef.update(cgData);
+    res.json({ message: "restart!" });
+  });
+});
+// Especificamente acomoda el "start", en el caso específico de que Jugar "A", no le haya dado a "Continuar", por lo que sus datos "online" & "start", permanecen en true, y el jugador "B", le haya dado a "Continuar", y posteriormente a "Jugar", y tenga que esperar a que el otro le de "Jugar también.
+app.patch("/startfalse/:roomId/:userId", (req, res) => {
+  const { roomId, userId } = req.params;
   const roomRef = realtimeDB.ref("/rooms/" + roomId);
   roomRef.get().then((currentGameSnap) => {
     var cgData = currentGameSnap.val();
-    console.log("cgData: ", cgData);
-    // Player 1
-    cgData.currentGame[Object.keys(cgData.currentGame)[0]].online = true;
-    cgData.currentGame[Object.keys(cgData.currentGame)[0]].start = false;
-    cgData.currentGame[Object.keys(cgData.currentGame)[0]].choice = "";
-    // Player 2
-    cgData.currentGame[Object.keys(cgData.currentGamea)[1]].online = true;
-    cgData.currentGame[Object.keys(cgData.currentGame)[1]].start = false;
-    cgData.currentGame[Object.keys(cgData.currentGame)[1]].choice = "";
-    // cgData.currentGame[Object.keys(cgData)[0]]
-
+    cgData.currentGame[userId].start = false;
     roomRef.update(cgData);
   });
 });
-
 // ------------ LISTEN ------------
 app.listen(PORT, () => {
   console.log("API Running");

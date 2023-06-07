@@ -16,23 +16,13 @@ const usersCollectionRef = db_1.firestoreDB.collection("users");
 const roomsCollectionRef = db_1.firestoreDB.collection("rooms");
 // Add Access Control Allow Origin headers
 app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:1234"
-    //https://piedrapapelotijerazo.onrender.com
-    );
+    res.setHeader("Access-Control-Allow-Origin", 
+    // "https://piedrapapelotijerazo.onrender.com"
+    "http://localhost:1234");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 // ------------ GET ------------
-// Devuelve toda la data de los usuarios ya existentes
-app.get("/users", (req, res) => {
-    usersCollectionRef.get().then((data) => {
-        const doc = data.docs;
-        const users = doc.map((item) => {
-            return item.data();
-        });
-        res.json({ users });
-    });
-});
 // Autentica el usuario para iniciar sesión, devolviendo su userId
 app.post("/auth", (req, res) => {
     const { email, password } = req.body;
@@ -345,15 +335,23 @@ app.patch("/gameRoom/:roomId/start/:userId", (req, res) => {
     });
 });
 // Terminó la ronda, se acomodan los datos.
-app.patch("/gameRoom/:roomId/restart/:userId", (req, res) => {
-    const { roomId, userId } = req.params;
+app.patch("/gameRoom/:roomId/restart/", (req, res) => {
+    const { roomId } = req.params;
     const roomRef = db_1.realtimeDB.ref("/rooms/" + roomId);
     roomRef.get().then((currentGameSnap) => {
         var cgData = currentGameSnap.val();
-        cgData.currentGame[userId].online = true;
-        cgData.currentGame[userId].start = false;
-        cgData.currentGame[userId].choice = "";
-        roomRef.update(cgData);
+        console.log("cgData: ", cgData);
+        res.json({ "cgData: ": cgData });
+        // Player 1
+        // cgData.currentGame[Object.keys(cgData)[0]].online = true;
+        // cgData.currentGame[Object.keys(cgData)[0]].start = false;
+        // cgData.currentGame[Object.keys(cgData)[0]].choice = "";
+        // // Player 2
+        // cgData.currentGame[Object.keys(cgData)[1]].online = true;
+        // cgData.currentGame[Object.keys(cgData)[1]].start = false;
+        // cgData.currentGame[Object.keys(cgData)[1]].choice = "";
+        // cgData.currentGame[Object.keys(cgData)[0]]
+        // roomRef.update(cgData);
     });
 });
 // ------------ LISTEN ------------
