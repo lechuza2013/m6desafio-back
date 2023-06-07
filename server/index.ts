@@ -21,8 +21,8 @@ const roomsCollectionRef = firestoreDB.collection("rooms");
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    // "https://piedrapapelotijerazo.onrender.com"
-    "http://localhost:1234"
+    "https://piedrapapelotijerazo.onrender.com"
+    // "http://localhost:1234"
   );
   res.header(
     "Access-Control-Allow-Headers",
